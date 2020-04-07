@@ -1,4 +1,3 @@
-# Lets put all students into an array
 def input_students
   puts "Please enter the names of the students"
   puts "To finish, just hit return twice"
@@ -25,44 +24,59 @@ def print_header
   puts "------------"
 end
 
-def print_footer(students)
-  puts "Overall, we have #{students.count} great students"
+def print_footer(students_list)
+  puts "Overall, we have #{students_list.count} great students"
 end
 
-def print(students)
-  students.each_with_index do |student, index|
+# potentially delte this
+def print_all_students(students_list)
+  students_list.each_with_index do |student, index|
     puts " #{index+1}. #{student[:name]} (#{student[:cohort]} cohort)"
   end
 end
 
-def print_list(list)
-  list.each do |x|
-    puts x
+# don't delete this
+def print_list(students_list)
+  students_list.each_with_index do |student, index|
+    puts "#{index+1}. #{student[:name]} #{student[:cohort]} cohort"
   end
 end
 
-def print_and_filter_students(students_list, criteria=nil)
+def filter_name_length(students_list, criteria)
+  name_length = []
+  students_list.each do |student|
+    if student[:name].length == criteria
+      name_length.push(student[:name])
+    end
+  end
+  puts "Students with name length = #{criteria}"
+  puts "total of: #{name_length.length}"
+  puts name_length
+end
+
+def filter_students_start_with(students_list, criteria=nil)
   start_with = []
   #Filter students
-  students_list.each_with_index do |student, index|
+  students_list.each do |student|
     start_with.push(student[:name]) if criteria != nil && student[:name].start_with?(criteria)
   end
   #Print filtered list
   if criteria == nil
-    print(students_list)
     print_footer(students_list)
-  elsif start_with.length == 0
-    puts "We have #{start_with.length} students whose first name starts with #{criteria}"
-  elsif start_with.length > 1
-    puts "We have #{start_with.length} students whose first name starts with #{criteria}"
-    print_list(start_with)
+    print_list(students_list)
   elsif start_with.length == 1
     puts "We have #{start_with.length} student whose first name starts with #{criteria}"
     print_list(start_with)
+  elsif start_with.length > 1
+    puts "We have #{start_with.length} students whose first name starts with #{criteria}"
+    print_list(start_with)
+  elsif start_with.length == 0
+    puts "We have #{start_with.length} students whose first name starts with #{criteria}"
   end
 end
 
 #nothing happens until we call the methods
 input_students()
 print_header()
-print_and_filter_students(@students, "C")
+filter_students_start_with(@students, "C")
+filter_name_length(@students, 4)
