@@ -69,7 +69,7 @@ def filter_students_start_with(students_list, criteria=nil)
   end
 end
 
-def filter_by_cohort(students_list, criteria)
+def filter_by_cohort_each(students_list, criteria)
   cohort = []
   students_list.each do |student|
     if student[:cohort] == criteria.to_s
@@ -80,10 +80,21 @@ def filter_by_cohort(students_list, criteria)
   puts "total of: #{cohort.length}"
   puts cohort
 end
+
+def filter_by_cohort_map(students_list, criteria)
+  puts "Students in the cohort of #{criteria}"
+  students_list.map do |student|
+    if student[:cohort] == criteria.to_s
+      puts student[:name] + " " + student[:degree] +  " " + student[:course]
+    end
+  end
+end
+
 #nothing happens until we call the methods
 input_students()
 # print_header()
 # print_list (@students)
 # filter_students_start_with(@students, "C")
 # filter_name_length(@students, 4)
-filter_by_cohort(@students, 2020)
+filter_by_cohort_map(@students, 2020)
+filter_by_cohort_each(@students, 2020)
