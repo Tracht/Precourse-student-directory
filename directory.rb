@@ -3,7 +3,7 @@ def input_students
   puts "To finish, just type \"done\" "
   # create an empty array
   @students = []
-  
+
   name = gets.chomp
   while name != "done" do
     cohort = gets.chomp
@@ -39,11 +39,11 @@ end
 def filter_name_length(students_list, criteria)
   name_length = []
   students_list.each do |student|
-    if student[:name].length == criteria
+    if student[:name].length <= criteria
       name_length.push(student[:name] + " " + student[:cohort])
     end
   end
-  puts "Students with name length is #{criteria}"
+  puts "Students with name length < or = #{criteria}"
   puts "total of: #{name_length.length}"
   puts name_length
 end
@@ -69,8 +69,21 @@ def filter_students_start_with(students_list, criteria=nil)
   end
 end
 
+def filter_by_cohort(students_list, criteria)
+  cohort = []
+  students_list.each do |student|
+    if student[:cohort] == criteria.to_s
+      cohort.push(student[:name] + " " + student[:degree] +  " " + student[:course])
+    end
+  end
+  puts "Students in the cohort of #{criteria}"
+  puts "total of: #{cohort.length}"
+  puts cohort
+end
 #nothing happens until we call the methods
 input_students()
-print_header()
-filter_students_start_with(@students, "C")
-filter_name_length(@students, 4)
+# print_header()
+# print_list (@students)
+# filter_students_start_with(@students, "C")
+# filter_name_length(@students, 4)
+filter_by_cohort(@students, 2020)
