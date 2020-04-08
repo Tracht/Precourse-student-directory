@@ -1,21 +1,23 @@
 def input_students
   puts "Please enter the names of the students"
-  puts "To finish, just hit return twice"
+  puts "To finish, just type \"done\" "
   # create an empty array
   @students = []
-  # get the first name
+  
   name = gets.chomp
-  # while the name is not empty, repeat this code
-  while !name.empty? do
+  while name != "done" do
+    cohort = gets.chomp
+    degree = gets.chomp
+    course = gets.chomp
     # add the student hash to the array
-    @students << {name: name, cohort: :november}
+    @students << {name: name, cohort: cohort, degree: degree, course: course}
       if @students.count == 1
         puts "Now we have #{@students.count} student"
       elsif @students.count != 1
         puts "Now we have #{@students.count} students"
       end
-    #get another name from the user
-    name = gets.chomp
+      # get the next name
+      name = gets.chomp
   end
 end
 
@@ -28,17 +30,9 @@ def print_footer(students_list)
   puts "Overall, we have #{students_list.count} great students"
 end
 
-# potentially delte this
-def print_all_students(students_list)
-  students_list.each_with_index do |student, index|
-    puts " #{index+1}. #{student[:name]} (#{student[:cohort]} cohort)"
-  end
-end
-
-# don't delete this
 def print_list(students_list)
   students_list.each_with_index do |student, index|
-    puts "#{index+1}. #{student[:name]} #{student[:cohort]} cohort"
+    puts " #{index+1}. #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]} of #{student[:course]} "
   end
 end
 
@@ -46,10 +40,10 @@ def filter_name_length(students_list, criteria)
   name_length = []
   students_list.each do |student|
     if student[:name].length == criteria
-      name_length.push(student[:name])
+      name_length.push(student[:name] + " " + student[:cohort])
     end
   end
-  puts "Students with name length = #{criteria}"
+  puts "Students with name length is #{criteria}"
   puts "total of: #{name_length.length}"
   puts name_length
 end
