@@ -36,72 +36,73 @@ end
 def edit_name(name)
   puts ">> Would you like to edit their name? Type yes or no"
   edit_name = gets.chomp.downcase
-    loop do
-      if edit_name == "yes"
-        puts ">> Edit name"
-        name = gets.chomp
-        puts ">> Name has been updated"
-        break
-      elsif edit_name == "no"
-        break
-      else
-        puts ">> I don't understand, try again"
-      end
+  loop do
+    if edit_name == "yes"
+      puts ">> Edit name"
+      name = gets.chomp
+      puts ">> Name has been updated"
+      break
+    elsif edit_name == "no"
+      break
+    else
+      puts ">> I don't understand, try again"
     end
+  end
   return name
 end
 
 def edit_cohort(cohort)
   puts ">> Would you like to edit the cohort? Type yes or no"
   edit_cohort = gets.chomp.downcase
-    loop do
-      if edit_cohort == "yes"
-        puts ">> Edit cohort"
-        cohort = gets.chomp
-        puts ">> Cohort has been updated"
-        break
-      elsif edit_cohort == "no"
-        break
-      else
-        puts ">> I don't understand, try again"
-      end
+  loop do
+    if edit_cohort == "yes"
+      puts ">> Edit cohort"
+      cohort = gets.chomp
+      puts ">> Cohort has been updated"
+      repeat = false
+      break
+    elsif edit_cohort == "no"
+      break
+    else
+      puts ">> I don't understand, try again"
     end
+  end
   return cohort
 end
 
 def edit_degree(degree)
   puts ">> Would you like to edit the degree? Type yes or no"
   edit_degree = gets.chomp.downcase
-    loop do
-      if edit_degree == "yes"
-        puts ">> Edit degree"
-        degree = gets.chomp
-        puts ">> Degree has been updated"
-        break
-      elsif edit_degree == "no"
-        break
-      else
-        puts ">> I don't understand, try again"
-      end
+  loop do
+    if edit_degree == "yes"
+      puts ">> Edit degree"
+      degree = gets.chomp
+      puts ">> Degree has been updated"
+      break
+    elsif edit_degree == "no"
+      break
+    else
+      puts ">> I don't understand, try again"
     end
+  end
   return degree
 end
 
 def edit_course(course)
   puts ">> Would you like to edit the course? Type yes or no"
   edit_course = gets.chomp.downcase
-    loop do
-      if edit_course == "yes"
-        puts ">> Edit course"
-        course = gets.chomp
-        puts ">> Course has been updated"
-        break
-      elsif edit_course == "no"
-        break
-      else
-        puts ">> I don't understand, try again"
-      end
+  loop do
+    if edit_course == "yes"
+      puts ">> Edit course"
+      course = gets.chomp
+      puts ">> Course has been updated"
+      break
+    elsif edit_course == "no"
+      break
+    else
+      puts ">> I don't understand, try again"
     end
+  end
   return course
 end
 
