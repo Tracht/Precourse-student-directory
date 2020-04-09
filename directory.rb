@@ -1,36 +1,46 @@
+@students = [] # an empty array accessible to all methods
+
 def input_students
+  name = ""
+  input_students_instructions()
+  name = get_student_name()
+  while name != "done" do
+      name = edit_name(name)
+    puts "Enter student's cohort"
+      cohort = gets.chomp
+      cohort = edit_cohort(cohort)
+    puts "Enter student's degree: MSc, BA, BSc"
+      degree = gets.chomp
+      degree = edit_degree(degree)
+    puts "Enter student's course, i.e. Maths"
+      course = gets.chomp
+      course = edit_course(course)
+    # add the student hash to the array
+    @students << {name: name, cohort: cohort, degree: degree, course: course}
+    count_print_all_students()
+    name = get_student_name()
+  end
+  return @students
+end
+
+def input_students_instructions()
   puts "Please enter the student's name, cohort, degree, & course"
   puts "To finish, type \"done\" "
-  # create an empty array
-  students = []
+  puts "----"
+end
+
+def get_student_name()
   puts "Enter student's name"
   name = gets.chomp
-  name = edit_name(name)
+  return name
+end
 
-  while name != "done" do
-    puts "Enter student's cohort"
-    cohort = gets.chomp
-    cohort = edit_cohort(cohort)
-
-    puts "Enter student's degree: MSc, BA, BSc"
-    degree = gets.chomp
-    degree = edit_degree(degree)
-
-    puts "Enter student's course, i.e. Maths"
-    course = gets.chomp
-    course = edit_course(course)
-
-    # add the student hash to the array
-    students << {name: name, cohort: cohort, degree: degree, course: course}
-      if students.count == 1
-        puts "Now we have #{students.count} student"
-      elsif students.count != 1
-        puts "Now we have #{students.count} students"
-      end
-      # get the next name
-      name = gets.chomp
+def count_print_all_students()
+  if @students.count == 1
+    puts "Now we have #{@students.count} student"
+  elsif @students.count != 1
+    puts "Now we have #{@students.count} students"
   end
-  students
 end
 
 def edit_name(name)
@@ -110,26 +120,32 @@ def print_header
   puts "The students of Villains Academy:"
 end
 
-def print_footer(students)
+def print_footer()
   puts ">>"
-  if students.count == 1
-    puts ">> Overall, we have #{students.count} great student"
+  if @students.count == 1
+    puts ">> Overall, we have #{@students.count} great student"
     puts ""
   else
-    puts ">> Overall, we have #{students.count} great students"
+    puts ">> Overall, we have #{@students.count} great students"
     puts ""
   end
 end
 
-def print(students)
-  students.each_with_index do |student, index|
+def print_students_list()
+  @students.each_with_index do |student, index|
     puts "#{index+1}. #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]} of #{student[:course]}"
   end
 end
 
-def filter_name_length(students_list, criteria)
+def show_students_formatted
+  print_header()
+  print_students_list()
+  print_footer()
+end
+
+def filter_name_length(criteria)
   name_length = []
-  students_list.each do |student|
+  @students.each do |student|
     if student[:name].length <= criteria
       name_length.push(student[:name] + " " + student[:cohort])
     end
@@ -139,16 +155,16 @@ def filter_name_length(students_list, criteria)
   puts name_length
 end
 
-def filter_students_start_with(students_list, criteria=nil)
+def filter_students_start_with(criteria=nil)
   start_with = []
   #Filter students
-  students_list.each do |student|
+  @students.each do |student|
     start_with.push(student[:name]) if criteria != nil && student[:name].start_with?(criteria)
   end
   #Print filtered list
   if criteria == nil
-    print_footer(students_list)
-    print_list(students_list)
+    print_footer(@students)
+    print_list(@students)
   elsif start_with.length == 1
     puts "We have #{start_with.length} student whose first name starts with #{criteria}"
     print_list(start_with)
@@ -160,9 +176,9 @@ def filter_students_start_with(students_list, criteria=nil)
   end
 end
 
-def filter_by_cohort_each(students_list, criteria)
+def filter_by_cohort(criteria)
   cohort = []
-  students_list.each do |student|
+  @students.each do |student|
     if student[:cohort] == criteria.to_s
       cohort.push(student[:name] + " " + student[:degree] +  " " + student[:course])
     end
@@ -172,48 +188,41 @@ def filter_by_cohort_each(students_list, criteria)
   puts cohort
 end
 
-def filter_by_cohort_map(students_list, criteria)
-  new_array = []
-  students_list.map do |student|
-    if student[:cohort] == criteria.to_s
-      new_array.push(student[:name] + ", " + student[:degree] +  ", " + student[:course])
-    end
-  end
-  puts "Students in the cohort of #{criteria}"
-  puts "total of: #{new_array.count}"
-  puts new_array
+def print_menu()
+  puts "----MENU----"
+  puts "1. Input the students"
+  puts "2. Show all students"
+  puts "3. Filter students by name length"
+  puts "4. Filter students by first name"
+  puts "5. Filter students by cohort"
+  puts "9. Exit"
+  puts "-----------"
+  puts ">> Select an option from the menu"
 end
 
-def typo_correction()
-
+def menu_selection(selection)
+  case selection
+    when "1"
+      students = input_students
+    when "2"
+      show_students_formatted()
+    when "3"
+      filter_name_length()
+    when "4"
+      filter_students_start_with()
+    when "5"
+      filter_by_cohort()
+    when "9"
+      exit
+    else
+      puts "I don't understand, try again"
+  end
 end
 
 def interactive_menu
-  students = []
   loop do
-    # 1. Print the menu
-    puts "----MENU----"
-    puts "1. Input the students"
-    puts "2. Show the students"
-    puts "9. Exit"
-    puts "-----------"
-    # 2. Read the input and save it into a variable
-    selection = gets.chomp
-    # 3. Do what the user asked
-    case selection
-      when "1"
-        # input students
-        students = input_students
-      when "2"
-        # show students
-        print_header()
-        print(students)
-        print_footer(students)
-      when "9"
-        exit
-      else
-        puts "I don't understand, try again"
-    end
+    print_menu()
+    menu_selection(gets.chomp)
   end
 end
 
