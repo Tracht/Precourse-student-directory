@@ -85,9 +85,14 @@ def edit_student(student_id)
   edit_field = STDIN.gets.chomp
   puts ">> Type in the correction"
   correction = STDIN.gets.chomp
+  edit_field(edit_field, student_id, correction)
+  puts "Changes have been saved:"
+  puts "#{@students[student_id - 1]}"
+end
+def edit_field(edit_field, student_id, correction)
   case edit_field
     when "0" || "student ID"
-      test = @students[student_id-1][:id]
+      test = @students[student_id - 1][:id]
       puts test
       @students[student_id - 1][:id] = correction.to_i  #:id is an integer
     when "1" || "name"
@@ -101,10 +106,7 @@ def edit_student(student_id)
     else
       puts "I don't understand your selection"
   end
-  puts "Changes have been saved:"
-  puts "#{@students[student_id - 1]}"
 end
-
 def count_nth_student()
   if @students.count == 1
     puts "Now we have #{@students.count} student"
