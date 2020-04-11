@@ -62,7 +62,7 @@ def try_load_students()
   end
 end
 def add_student_to_list(id, name, cohort, degree, course)
-  @students << {id: id.to_i, name: name, cohort: cohort.to_i, degree: degree, course: course}
+  @students << {id: id.to_i, name: name.capitalize, cohort: cohort.to_i, degree: degree.capitalize, course: course.capitalize}
   return @students
 end
 def input_instructions()
@@ -172,7 +172,7 @@ def filter_students_start_with(criteria)
   start_with = []
   #Filter students
   @students.each do |student|
-    start_with.push(student_details(student)) if student[:name].start_with?(criteria)
+    start_with.push(student_details(student)) if student[:name].start_with?(criteria.capitalize)
   end
   if start_with.length == 1
     puts "We have #{start_with.length} student whose first name starts with #{criteria}"
