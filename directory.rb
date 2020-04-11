@@ -39,17 +39,22 @@ def save_students
   file.close
 end
 def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
+  file = File.open(filename, "r") #Set variable 'file' to open file with read access.
+  file.readlines.each do |line| #Read all the lines into an array. .readlines is a method.
   id, name, cohort, degree, course = line.chomp.split(",") #parallel assignment
     add_student_to_list(id, name, cohort, degree, course)
+    #we discard the trailing new line character (.chomp) from the line,
+    #split it at comma (gives us an array with 5 elements) and assign them
+    #to id, name, cohort, degree, and course.
   end
   file.close
 end
 def try_load_students()
   filename = ARGV.first #first argument from the command line
-  return if filename.nil? #get out of the method if it isn't given
-  if File.exists?(filename) #if file exists
+  if filename.nil?
+    load_students()
+    puts "Loaded #{@students.count} from students.csv"
+  elsif File.exists?(filename)
     load_students(filename)
     puts "Loaded #{@students.count} from #{filename}"
   else
@@ -62,7 +67,7 @@ def add_student_to_list(id, name, cohort, degree, course)
 end
 def input_instructions()
   puts "Please enter the student's name, cohort, degree (MSc, BA, BSc), & course"
-  puts "To finish, type \"done\" "
+  puts "To finish, type \"done\" or type \"edit\" to change a student's details"
   puts "----"
 end
 def student_details_menu()
@@ -177,7 +182,6 @@ def filter_students_start_with(criteria)
     puts start_with
   end
 end
-
 def ask_cohort()
   puts ">> Filter students by cohort"
   puts ">> Enter the cohort"
@@ -195,7 +199,6 @@ def filter_by_cohort(criteria)
   puts "total of: #{cohort.length}"
   puts cohort
 end
-
 def print_menu()
   puts "----MENU----"
   puts "1. Input the students"
