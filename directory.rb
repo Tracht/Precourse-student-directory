@@ -31,23 +31,25 @@ end
 def save_students
   file = File.open("students.csv", "w")
   @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:degree], student[:course]]
+    student_data = [student[:id], student[:name], student[:cohort], student[:degree], student[:course]]
     csv_line = student_data.join(",")
-    file.puts csv_line
+    file.puts csv_line #this writes to a file, instead of the output stream
   end
   file.close
 end
+def load_students()
+  file = File.open("students.csv", "r")
+  file.readlines.each do |line|
+  id, name, cohort, degree, course = line.chomp.split(",") #parallel assignment
+    @students << {id: id.to_i, name: name, cohort: cohort.to_i, degree: degree, course: course}
+  end
+  file.close
+end
+
 def input_instructions()
   puts "Please enter the student's name, cohort, degree (MSc, BA, BSc), & course"
   puts "To finish, type \"done\" "
   puts "----"
-end
-def count_nth_student()
-  if @students.count == 1
-    puts "Now we have #{@students.count} student"
-  elsif @students.count != 1
-    puts "Now we have #{@students.count} students"
-  end
 end
 def student_details_menu()
   puts ">> Which field do you wish to edit?"
@@ -62,7 +64,6 @@ def edit_student_intro()
   print_students_list()
   puts ">> Enter the student's ID"
 end
-
 def edit_student(student_id)
   puts "make edits to:"
   puts "#{@students[student_id - 1]}" #needs -1 otherwise wrong index position
@@ -90,6 +91,13 @@ def edit_student(student_id)
   puts "#{@students[student_id - 1]}"
 end
 
+def count_nth_student()
+  if @students.count == 1
+    puts "Now we have #{@students.count} student"
+  elsif @students.count != 1
+    puts "Now we have #{@students.count} students"
+  end
+end
 def print_header
   puts "The students of Villains Academy:"
 end
@@ -102,7 +110,6 @@ def print_footer()
     puts ""
   end
 end
-
 def print_students_list()
   @students.each do |student|
     puts "ID #{student[:id]}, #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]}, #{student[:course]}"
@@ -173,10 +180,11 @@ def print_menu()
   puts "----MENU----"
   puts "1. Input the students"
   puts "2. Show all students"
-  puts "3. Filter students by name length"
-  puts "4. Filter students by first name"
-  puts "5. Filter students by cohort"
-  puts "6. Save the list to students.csv"
+  puts "3. Save student list to students.csv"
+  puts "4. Load students from students.csv"
+  puts "5. Filter students by name length"
+  puts "6. Filter students by first name"
+  puts "7. Filter students by cohort"
   puts "9. Exit"
   puts "-----------"
   puts ">> Select an option from the menu"
@@ -188,16 +196,18 @@ def menu_selection(selection)
     when "2"
       show_students_formatted()
     when "3"
+      save_students()
+    when "4"
+      load_students()
+    when "5"
       name_length = ask_name_length()
       filter_name_length(name_length)
-    when "4"
+    when "6"
       start_with = ask_start_with()
       filter_students_start_with(start_with)
-    when "5"
+    when "7"
       cohort = ask_cohort()
       filter_by_cohort(cohort)
-    when "6"
-      save_students()
     when "9"
       exit
     else
