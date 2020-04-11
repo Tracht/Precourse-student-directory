@@ -5,32 +5,38 @@ def input_students
   input_instructions()
   input = ""
   while input != "done" || input != "edit"
-      input = STDIN.gets.chomp
-      if input == "done"
-        break
-      elsif input == "edit"
-        edit_student_intro()
-        edit_id = STDIN.gets.chomp.to_i
-        edit_student(edit_id)
+    input = STDIN.gets.chomp
+    if input == "done"
+        return
+    elsif input == "edit"
+      edit_student_intro()
+      edit_id = STDIN.gets.chomp.to_i
+      edit_student(edit_id)
+    else
+      array = input.split(", ").unshift(id)
+      print array
+      if array.size < 5
+        puts ""
+        puts "All fields must be completed to be added."
+        puts "Please put \"nil,\" if you don't know."
       else
-        array = input.split(", ").unshift(id)
-        print array
         id = array[0] #this is already integer
         name = array[1]
         cohort = array[2].to_i
         degree = array[3]
         course = array[4]
         # add the student hash to the array
-        add_student_to_list(id, name, cohort, degree, course)
+        add_student_to_master_list(id, name, cohort, degree, course)
         print count_nth_student()
         id +=1
       end
+    end
   end
   return @students
 end
 
-def save_students
-  file = File.open("students.csv", "w")
+def save_students(filename = "students.csv")
+  file = File.open(filename, "w")
   @students.each do |student|
     student_data = [student[:id], student[:name], student[:cohort], student[:degree], student[:course]]
     csv_line = student_data.join(",")
@@ -42,10 +48,8 @@ def load_students(filename = "students.csv")
   file = File.open(filename, "r") #Set variable 'file' to open file with read access.
   file.readlines.each do |line| #Read all the lines into an array. .readlines is a method.
   id, name, cohort, degree, course = line.chomp.split(",") #parallel assignment
-    add_student_to_list(id, name, cohort, degree, course)
-    #we discard the trailing new line character (.chomp) from the line,
-    #split it at comma (gives us an array with 5 elements) and assign them
-    #to id, name, cohort, degree, and course.
+    add_student_to_master_list(id, name, cohort, degree, course)
+    #we discard the trailing new line character (.chomp) from the line
   end
   file.close
 end
@@ -61,7 +65,7 @@ def try_load_students()
     puts "Sorry, #{filename} doesn't exist."
   end
 end
-def add_student_to_list(id, name, cohort, degree, course)
+def add_student_to_master_list(id, name, cohort, degree, course)
   @students << {id: id.to_i, name: name.capitalize, cohort: cohort.to_i, degree: degree.capitalize, course: course.capitalize}
   return @students
 end
