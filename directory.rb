@@ -1,127 +1,99 @@
 @students = [] # an empty array accessible to all methods
-
+@student_id_counter = 1
 def input_students
-  name = ""
-  input_students_instructions()
-  name = get_student_name()
-  while name != "done" do
-      name = edit_name(name)
-    puts "Enter student's cohort"
-      cohort = gets.chomp
-      cohort = edit_cohort(cohort)
-    puts "Enter student's degree: MSc, BA, BSc"
-      degree = gets.chomp
-      degree = edit_degree(degree)
-    puts "Enter student's course, i.e. Maths"
-      course = gets.chomp
-      course = edit_course(course)
-    # add the student hash to the array
-    @students << {name: name, cohort: cohort, degree: degree, course: course}
-    count_print_all_students()
-    name = get_student_name()
+  input_instructions()
+  input = ""
+  while input != "done" || input != "edit"
+      input = gets.chomp
+      if input == "done"
+        break
+      elsif input == "edit"
+        edit_student_intro()
+        edit_id = gets.chomp.to_i
+        edit_student(edit_id)
+      else
+        array = input.split(", ").unshift(@student_id_counter)
+        print array
+        @student_id_counter = array[0] #this is already integer
+        name = array[1]
+        cohort = array[2].to_i
+        degree = array[3]
+        course = array[4]
+        # add the student hash to the array
+        @students << {id: @student_id_counter, name: name, cohort: cohort, degree: degree, course: course}
+        print count_nth_student()
+        @student_id_counter += 1
+      end
   end
   return @students
 end
 
-def input_students_instructions()
-  puts "Please enter the student's name, cohort, degree, & course"
+def save_students
+  file = File.open("students.csv", "w")
+  @students.each do |student|
+    student_data = [student[:name], student[:cohort], student[:degree], student[:course]]
+    csv_line = student_data.join(",")
+    file.puts csv_line
+  end
+  file.close
+end
+def input_instructions()
+  puts "Please enter the student's name, cohort, degree (MSc, BA, BSc), & course"
   puts "To finish, type \"done\" "
   puts "----"
 end
-
-def get_student_name()
-  puts "Enter student's name"
-  name = gets.chomp
-  return name
-end
-
-def count_print_all_students()
+def count_nth_student()
   if @students.count == 1
     puts "Now we have #{@students.count} student"
   elsif @students.count != 1
     puts "Now we have #{@students.count} students"
   end
 end
-
-def edit_name(name)
-  puts ">> Would you like to edit their name? Type yes or no"
-  edit_name = gets.chomp.downcase
-  loop do
-    if edit_name == "yes"
-      puts ">> Edit name"
-      name = gets.chomp
-      puts ">> Name has been updated"
-      break
-    elsif edit_name == "no"
-      break
-    else
-      puts ">> I don't understand, try again"
-    end
+def student_details_menu()
+  puts ">> Which field do you wish to edit?"
+  student_details = ["student ID", "name", "cohort", "degree", "course"]
+  student_details.each_with_index do |x, index|
+    puts "#{index}. #{x}"
   end
-  return name
+  puts ">>"
+end
+def edit_student_intro()
+  puts ">> Which student do you want to edit?"
+  print_students_list()
+  puts ">> Enter the student's ID"
 end
 
-def edit_cohort(cohort)
-  puts ">> Would you like to edit the cohort? Type yes or no"
-  edit_cohort = gets.chomp.downcase
-  loop do
-    if edit_cohort == "yes"
-      puts ">> Edit cohort"
-      cohort = gets.chomp
-      puts ">> Cohort has been updated"
-      repeat = false
-      break
-    elsif edit_cohort == "no"
-      break
+def edit_student(student_id)
+  puts "make edits to:"
+  puts "#{@students[student_id - 1]}" #needs -1 otherwise wrong index position
+  student_details_menu()
+  edit_field = gets.chomp
+  puts ">> Type in the correction"
+  correction = gets.chomp
+  case edit_field
+    when "0" || "student ID"
+      test = @students[student_id-1][:id]
+      puts test
+      @students[student_id - 1][:id] = correction.to_i  #:id is an integer
+    when "1" || "name"
+      @students[student_id - 1][:name] = correction.capitalize
+    when "2" || "cohort"
+      @students[student_id - 1][:cohort] = correction.to_i  #:cohort is an integer
+    when "3" || "degree"
+      @students[student_id - 1][:degree] = correction.capitalize
+    when "4" || "course"
+      @students[student_id - 1][:course] = correction.capitalize
     else
-      puts ">> I don't understand, try again"
-    end
+      puts "I don't understand your selection"
   end
-  return cohort
-end
-
-def edit_degree(degree)
-  puts ">> Would you like to edit the degree? Type yes or no"
-  edit_degree = gets.chomp.downcase
-  loop do
-    if edit_degree == "yes"
-      puts ">> Edit degree"
-      degree = gets.chomp
-      puts ">> Degree has been updated"
-      break
-    elsif edit_degree == "no"
-      break
-    else
-      puts ">> I don't understand, try again"
-    end
-  end
-  return degree
-end
-
-def edit_course(course)
-  puts ">> Would you like to edit the course? Type yes or no"
-  edit_course = gets.chomp.downcase
-  loop do
-    if edit_course == "yes"
-      puts ">> Edit course"
-      course = gets.chomp
-      puts ">> Course has been updated"
-      break
-    elsif edit_course == "no"
-      break
-    else
-      puts ">> I don't understand, try again"
-    end
-  end
-  return course
+  puts "Changes have been saved:"
+  puts "#{@students[student_id - 1]}"
 end
 
 def print_header
   puts "The students of Villains Academy:"
 end
-
 def print_footer()
-  puts ">>"
   if @students.count == 1
     puts ">> Overall, we have #{@students.count} great student"
     puts ""
@@ -132,17 +104,22 @@ def print_footer()
 end
 
 def print_students_list()
-  @students.each_with_index do |student, index|
-    puts "#{index+1}. #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]} of #{student[:course]}"
+  @students.each do |student|
+    puts "ID #{student[:id]}, #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]}, #{student[:course]}"
   end
 end
-
 def show_students_formatted
   print_header()
   print_students_list()
   print_footer()
 end
 
+def ask_name_length()
+  puts ">> Filter students by name length"
+  puts ">> Enter name length"
+  name_length = gets.chomp
+  return name_length.to_i
+end
 def filter_name_length(criteria)
   name_length = []
   @students.each do |student|
@@ -150,36 +127,40 @@ def filter_name_length(criteria)
       name_length.push(student[:name] + " " + student[:cohort])
     end
   end
-  puts "Students with name length < or = #{criteria}"
-  puts "total of: #{name_length.length}"
+  puts ">> Students with name length < or = #{criteria}"
+  puts ">> Total of #{name_length.length}"
   puts name_length
 end
-
-def filter_students_start_with(criteria=nil)
+def ask_start_with()
+  puts ">> Filter students by name's first letter"
+  puts ">> Enter the letter it starts with"
+  start_with = gets.chomp
+  return start_with
+end
+def filter_students_start_with(criteria)
   start_with = []
   #Filter students
   @students.each do |student|
-    start_with.push(student[:name]) if criteria != nil && student[:name].start_with?(criteria)
+    start_with.push(student[:name]) if student[:name].start_with?(criteria)
   end
-  #Print filtered list
-  if criteria == nil
-    print_footer(@students)
-    print_list(@students)
-  elsif start_with.length == 1
+  if start_with.length == 1
     puts "We have #{start_with.length} student whose first name starts with #{criteria}"
-    print_list(start_with)
-  elsif start_with.length > 1
+    puts start_with
+  else
     puts "We have #{start_with.length} students whose first name starts with #{criteria}"
-    print_list(start_with)
-  elsif start_with.length == 0
-    puts "We have #{start_with.length} students whose first name starts with #{criteria}"
+    puts start_with
   end
 end
-
+def ask_cohort()
+  puts ">> Filter students by cohort"
+  puts ">> Enter the cohort"
+  cohort = gets.chomp.to_i
+  return cohort
+end
 def filter_by_cohort(criteria)
   cohort = []
   @students.each do |student|
-    if student[:cohort] == criteria.to_s
+    if student[:cohort] == criteria
       cohort.push(student[:name] + " " + student[:degree] +  " " + student[:course])
     end
   end
@@ -195,11 +176,11 @@ def print_menu()
   puts "3. Filter students by name length"
   puts "4. Filter students by first name"
   puts "5. Filter students by cohort"
+  puts "6. Save the list to students.csv"
   puts "9. Exit"
   puts "-----------"
   puts ">> Select an option from the menu"
 end
-
 def menu_selection(selection)
   case selection
     when "1"
@@ -207,18 +188,22 @@ def menu_selection(selection)
     when "2"
       show_students_formatted()
     when "3"
-      filter_name_length()
+      name_length = ask_name_length()
+      filter_name_length(name_length)
     when "4"
-      filter_students_start_with()
+      start_with = ask_start_with()
+      filter_students_start_with(start_with)
     when "5"
-      filter_by_cohort()
+      cohort = ask_cohort()
+      filter_by_cohort(cohort)
+    when "6"
+      save_students()
     when "9"
       exit
     else
       puts "I don't understand, try again"
   end
 end
-
 def interactive_menu
   loop do
     print_menu()
