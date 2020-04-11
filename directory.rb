@@ -4,12 +4,12 @@ def input_students
   input_instructions()
   input = ""
   while input != "done" || input != "edit"
-      input = gets.chomp
+      input = STDIN.gets.chomp
       if input == "done"
         break
       elsif input == "edit"
         edit_student_intro()
-        edit_id = gets.chomp.to_i
+        edit_id = STDIN.gets.chomp.to_i
         edit_student(edit_id)
       else
         array = input.split(", ").unshift(@student_id_counter)
@@ -37,13 +37,23 @@ def save_students
   end
   file.close
 end
-def load_students()
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
   id, name, cohort, degree, course = line.chomp.split(",") #parallel assignment
     @students << {id: id.to_i, name: name, cohort: cohort.to_i, degree: degree, course: course}
   end
   file.close
+end
+def try_load_students()
+  filename = ARGV.first #first argument from the command line
+  return if filename.nil? #get out of the method if it isn't given
+  if File.exists?(filename) #if file exists
+    load_students(filename)
+    puts "Loaded #{@students.count} from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+  end
 end
 
 def input_instructions()
@@ -68,9 +78,9 @@ def edit_student(student_id)
   puts "make edits to:"
   puts "#{@students[student_id - 1]}" #needs -1 otherwise wrong index position
   student_details_menu()
-  edit_field = gets.chomp
+  edit_field = STDIN.gets.chomp
   puts ">> Type in the correction"
-  correction = gets.chomp
+  correction = STDIN.gets.chomp
   case edit_field
     when "0" || "student ID"
       test = @students[student_id-1][:id]
@@ -124,7 +134,7 @@ end
 def ask_name_length()
   puts ">> Filter students by name length"
   puts ">> Enter name length"
-  name_length = gets.chomp
+  name_length = STDIN.gets.chomp
   return name_length.to_i
 end
 def filter_name_length(criteria)
@@ -141,7 +151,7 @@ end
 def ask_start_with()
   puts ">> Filter students by name's first letter"
   puts ">> Enter the letter it starts with"
-  start_with = gets.chomp
+  start_with = STDIN.gets.chomp
   return start_with
 end
 def filter_students_start_with(criteria)
@@ -161,7 +171,7 @@ end
 def ask_cohort()
   puts ">> Filter students by cohort"
   puts ">> Enter the cohort"
-  cohort = gets.chomp.to_i
+  cohort = STDIN.gets.chomp.to_i
   return cohort
 end
 def filter_by_cohort(criteria)
@@ -198,7 +208,8 @@ def menu_selection(selection)
     when "3"
       save_students()
     when "4"
-      load_students()
+      try_load_students()
+      # load_students()
     when "5"
       name_length = ask_name_length()
       filter_name_length(name_length)
@@ -217,7 +228,7 @@ end
 def interactive_menu
   loop do
     print_menu()
-    menu_selection(gets.chomp)
+    menu_selection(STDIN.gets.chomp)
   end
 end
 
