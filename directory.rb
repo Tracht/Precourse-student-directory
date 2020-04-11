@@ -1,6 +1,7 @@
 @students = [] # an empty array accessible to all methods
-@student_id_counter = 1
 def input_students
+  array_length = @students.size
+  id = array_length + 1
   input_instructions()
   input = ""
   while input != "done" || input != "edit"
@@ -12,17 +13,17 @@ def input_students
         edit_id = STDIN.gets.chomp.to_i
         edit_student(edit_id)
       else
-        array = input.split(", ").unshift(@student_id_counter)
+        array = input.split(", ").unshift(id)
         print array
-        @student_id_counter = array[0] #this is already integer
+        id = array[0] #this is already integer
         name = array[1]
         cohort = array[2].to_i
         degree = array[3]
         course = array[4]
         # add the student hash to the array
-        @students << {id: @student_id_counter, name: name, cohort: cohort, degree: degree, course: course}
+        add_student_to_list(id, name, cohort, degree, course)
         print count_nth_student()
-        @student_id_counter += 1
+        id +=1
       end
   end
   return @students
@@ -41,7 +42,7 @@ def load_students(filename = "students.csv")
   file = File.open(filename, "r")
   file.readlines.each do |line|
   id, name, cohort, degree, course = line.chomp.split(",") #parallel assignment
-    @students << {id: id.to_i, name: name, cohort: cohort.to_i, degree: degree, course: course}
+    add_student_to_list(id, name, cohort, degree, course)
   end
   file.close
 end
@@ -55,7 +56,10 @@ def try_load_students()
     puts "Sorry, #{filename} doesn't exist."
   end
 end
-
+def add_student_to_list(id, name, cohort, degree, course)
+  @students << {id: id.to_i, name: name, cohort: cohort.to_i, degree: degree, course: course}
+  return @students
+end
 def input_instructions()
   puts "Please enter the student's name, cohort, degree (MSc, BA, BSc), & course"
   puts "To finish, type \"done\" "
@@ -122,15 +126,17 @@ def print_footer()
 end
 def print_students_list()
   @students.each do |student|
-    puts "ID #{student[:id]}, #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]}, #{student[:course]}"
+    puts student_details(student)
   end
+end
+def student_details(student)
+  return "ID #{student[:id]}, #{student[:name]}, #{student[:cohort]} cohort, #{student[:degree]}, #{student[:course]}"
 end
 def show_students_formatted
   print_header()
   print_students_list()
   print_footer()
 end
-
 def ask_name_length()
   puts ">> Filter students by name length"
   puts ">> Enter name length"
@@ -140,13 +146,14 @@ end
 def filter_name_length(criteria)
   name_length = []
   @students.each do |student|
-    if student[:name].length <= criteria
-      name_length.push(student[:name] + " " + student[:cohort])
+    if student[:name].length <= criteria.to_i
+      name_length.push(student_details(student))
     end
   end
   puts ">> Students with name length < or = #{criteria}"
   puts ">> Total of #{name_length.length}"
   puts name_length
+  puts
 end
 def ask_start_with()
   puts ">> Filter students by name's first letter"
@@ -158,7 +165,7 @@ def filter_students_start_with(criteria)
   start_with = []
   #Filter students
   @students.each do |student|
-    start_with.push(student[:name]) if student[:name].start_with?(criteria)
+    start_with.push(student_details(student)) if student[:name].start_with?(criteria)
   end
   if start_with.length == 1
     puts "We have #{start_with.length} student whose first name starts with #{criteria}"
@@ -168,6 +175,7 @@ def filter_students_start_with(criteria)
     puts start_with
   end
 end
+
 def ask_cohort()
   puts ">> Filter students by cohort"
   puts ">> Enter the cohort"
@@ -178,7 +186,7 @@ def filter_by_cohort(criteria)
   cohort = []
   @students.each do |student|
     if student[:cohort] == criteria
-      cohort.push(student[:name] + " " + student[:degree] +  " " + student[:course])
+      cohort.push(student_details(student))
     end
   end
   puts "Students in the cohort of #{criteria}"
