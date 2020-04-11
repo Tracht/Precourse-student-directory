@@ -208,8 +208,7 @@ def menu_selection(selection)
     when "3"
       save_students()
     when "4"
-      try_load_students()
-      # load_students()
+      load_students()
     when "5"
       name_length = ask_name_length()
       filter_name_length(name_length)
@@ -233,4 +232,5 @@ def interactive_menu
 end
 
 #nothing happens until we call the methods
+try_load_students()
 interactive_menu()
